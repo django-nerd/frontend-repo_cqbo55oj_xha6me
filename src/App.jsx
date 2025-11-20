@@ -1,71 +1,66 @@
+import { useEffect, useState } from 'react'
+import Hero from './components/Hero'
+import QuickScan from './components/QuickScan'
+import Report from './components/Report'
+import UseCases from './components/UseCases'
+import ContactPitch from './components/ContactPitch'
+import Dashboard from './components/Dashboard'
+
 function App() {
+  const [useCases, setUseCases] = useState([
+    { category: 'marketing', title: 'Social media calendar', description: 'Automatisch posts genereren en plannen.' },
+    { category: 'analyse', title: 'KPI samenvattingen', description: 'Wekelijkse inzichten en trends.' },
+    { category: 'klantenservice', title: 'FAQ chatbot', description: 'Snelle antwoorden met je eigen kennisbank.' },
+    { category: 'hr', title: 'Vacature screening', description: 'CV\'s scoren en samenvatten met AI.' }
+  ])
+  const [report, setReport] = useState(null)
+
+  useEffect(() => {
+    const fetchUseCases = async () => {
+      try {
+        const base = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
+        const res = await fetch(`${base}/api/use-cases`)
+        const data = await res.json()
+        if (data.items) setUseCases(data.items)
+      } catch {}
+    }
+    fetchUseCases()
+  }, [])
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.05),transparent_50%)]"></div>
-
-      <div className="relative min-h-screen flex items-center justify-center p-8">
-        <div className="max-w-2xl w-full">
-          {/* Header with Flames icon */}
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center mb-6">
-              <img
-                src="/flame-icon.svg"
-                alt="Flames"
-                className="w-24 h-24 drop-shadow-[0_0_25px_rgba(59,130,246,0.5)]"
-              />
-            </div>
-
-            <h1 className="text-5xl font-bold text-white mb-4 tracking-tight">
-              Flames Blue
-            </h1>
-
-            <p className="text-xl text-blue-200 mb-6">
-              Build applications through conversation
-            </p>
-          </div>
-
-          {/* Instructions */}
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 shadow-xl mb-6">
-            <div className="flex items-start gap-4 mb-6">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">
-                1
-              </div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Describe your idea</h3>
-                <p className="text-blue-200/80 text-sm">Use the chat panel on the left to tell the AI what you want to build</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4 mb-6">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">
-                2
-              </div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Watch it build</h3>
-                <p className="text-blue-200/80 text-sm">Your app will appear in this preview as the AI generates the code</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center font-bold">
-                3
-              </div>
-              <div>
-                <h3 className="font-semibold text-white mb-1">Refine and iterate</h3>
-                <p className="text-blue-200/80 text-sm">Continue the conversation to add features and make changes</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="text-center">
-            <p className="text-sm text-blue-300/60">
-              No coding required • Just describe what you want
-            </p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <header className="sticky top-0 backdrop-blur supports-[backdrop-filter]:bg-slate-900/60 bg-slate-900/40 border-b border-blue-500/10 z-10">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="text-white font-bold">Flomote</div>
+          <nav className="flex items-center gap-6 text-blue-100">
+            <a href="#quickscan" className="hover:text-white transition">QuickScan</a>
+            <a href="#usecases" className="hover:text-white transition">Use Cases</a>
+            <a href="#contact" className="hover:text-white transition">Contact</a>
+          </nav>
         </div>
-      </div>
+      </header>
+
+      <main>
+        <Hero onStart={() => document.getElementById('quickscan')?.scrollIntoView({ behavior: 'smooth' })} />
+
+        <div id="quickscan">
+          <QuickScan onReport={setReport} />
+        </div>
+
+        <Report report={report} />
+
+        <UseCases items={useCases} />
+
+        <div id="contact">
+          <ContactPitch />
+        </div>
+
+        <Dashboard />
+      </main>
+
+      <footer className="border-t border-blue-500/10 py-8 text-center text-blue-200/70">
+        © {new Date().getFullYear()} Flomote — Slimmer werken met AI
+      </footer>
     </div>
   )
 }
